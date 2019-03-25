@@ -1,0 +1,33 @@
+{
+  // Set the projects up here...
+  Projects: [
+    {Name: "Project 1", Colour: "#FFBFBF"},
+    {Name: "Project 2", Colour: "#BFFFBF"},
+    {Name: "Project 3", Colour: "Yellow"}, // You can set colurs by name
+    {Name: "Project 4", Colour: "#BFBFFF"} // Or by HTML RGB.
+  ],
+
+  // Set the plan up here...
+  Plan:
+  [
+    // Order doesn't matter, just match up the person and project names.
+    {Person: "Chase", Project: "Project 1", Start: D+0, End: D+3}, // Either set a start and end date. (In yyyyMMdd format)
+    {Person: "Chase", Project: "Project 2", Start: D+3, DaysDuration: 8}, // Or set a start and DaysDuration.
+
+    // Projects can overlap start/end dates and the view will adapt the layout to fit in the smallest possible number of rows.
+    {Person: "Marshal", Project: "Project 3", Start: D+0, DaysDuration: 8},
+    {Person: "Marshal", Project: "Project 4", Start: D+6, DaysDuration: 6},
+
+    {Person: "Sky", Project: "Project 1", Start: D+0, DaysDuration: 2},
+    {Person: "Sky", Project: "Project 4", Start: D+2, DaysDuration: 3},
+    {Person: "Sky", Project: "Project 5", Start: D+6, DaysDuration: 3}, // Projects that are not in the master project list still work, just without a colour.
+    {Person: "Sky", Project: "Project 3", Start: D+4, DaysDuration: 4},
+    {Person: "Sky", Project: "Project 1", Start: D+6, DaysDuration: 1},
+
+    // If you prefer to structure your file with projects first, or a combination of both, that works too.
+    {Project: "Project 2", Person: "Rubble", Start: D+0, DaysDuration: 7},
+    {Project: "Project 2", Person: "Sky", Start: D+7, DaysDuration: 4},
+
+    {Project: "Project 4", Person: "Rubble", Start: D+7, DaysDuration: 4}
+  ]
+}

@@ -1,0 +1,36 @@
+# Binaries #
+*.exe
+*.dll
+
+# User config #
+*.suo
+*.user
+
+.gitignore~
+*.swp
+
+bin/
+obj/
+*.cachefile
+
+# Don't put fonts in source control - they aren't part of the source. They are 3rd party. #
+CreouDotCom/Fonts
+
+packages/
+
+# Don't put visual studio settings files in source control.
+.vs/
+
+# Don't put publish scripts in source control.
+CreouDotCom.Publish.xml
+PublishProfiles/
+
+# Word temp files #
+~*
+
+# Windows thumbnail cache files #
+Thumbs.db
+
+# Live config transformations #
+CreouDotCom/Web.Debug.config
+CreouDotCom/Web.Release.config
