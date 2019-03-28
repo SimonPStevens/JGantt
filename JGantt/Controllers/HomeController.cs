@@ -131,7 +131,7 @@ namespace JGantt.Controllers
             modelTransform?.Invoke(jsonModel);
 
             List<Person> people = new List<Person>();
-            people.AddRange(jsonModel.Plan.Select(p => p.Person).Distinct().Select(p => new Person(p)));
+            people.AddRange(jsonModel.Plan.Select(p => p.Person).Distinct().Select(p => new Person(p, "")));
 
             List<Project> projects = new List<Project>();
             projects.AddRange(jsonModel.Plan.Select(p => p.Project).Distinct().Select(p => jsonModel.Projects.FirstOrDefault(pro => pro.Name == p) ?? new Project(p, "")));

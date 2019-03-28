@@ -10,68 +10,96 @@ namespace JGantt.Models
         public PlanModel(List<PersonProject> plan)
         {
             this.Plan = plan ?? new List<PersonProject>();
-            this.PersonPlans = new List<PersonPlan>();
+            this.PersonPlans = BuildItemPlan(item=>item.Person);
+            this.ProjectPlans = BuildItemPlan(item => item.Project);
+        }
 
-            foreach (var item in this.Plan)
+        private List<ItemPlan> BuildItemPlan(Func<PersonProject, IPlannableItem> getPlannableItem)
+        {
+            var plan = new List<ItemPlan>();
+
+            foreach (var personProject in this.Plan)
             {
-                var personPlan = this.PersonPlans.FirstOrDefault(p => p.Person == item.Person);
-                if(personPlan == null)
+                var itemPlan = plan.FirstOrDefault(p => p.PlannableItem == getPlannableItem(personProject));
+                if (itemPlan == null)
                 {
-                    personPlan = new PersonPlan(item.Person);
-                    this.PersonPlans.Add(personPlan);
+                    itemPlan = new ItemPlan(getPlannableItem(personProject));
+                    plan.Add(itemPlan);
                 }
 
-                var channel = personPlan.Channels.FirstOrDefault(c=>!c.Projects.Any(p=>p.Start < item.End && p.End > item.Start));
-                if(channel == null)
+                var channel = itemPlan.Channels.FirstOrDefault(c => !c.PersonProjects.Any(p => p.Start < personProject.End && p.End > personProject.Start));
+                if (channel == null)
                 {
-                    int newChannelNumber = personPlan.Channels.Any() ? personPlan.Channels.Max(c => c.ChannelNumber) + 1 : 0;
-                    channel = new PersonChannel(newChannelNumber);
-                    personPlan.Channels.Add(channel);
+                    int newChannelNumber = itemPlan.Channels.Any() ? itemPlan.Channels.Max(c => c.ChannelNumber) + 1 : 0;
+                    channel = new Channel(newChannelNumber);
+                    itemPlan.Channels.Add(channel);
                 }
-                channel.Projects.Add(item);
+                channel.PersonProjects.Add(personProject);
             }
+
+            return plan;
         }
 
         public List<PersonProject> Plan { get; set; }
-        public List<PersonPlan> PersonPlans { get; set; }
+        public List<ItemPlan> PersonPlans { get; set; }
+        public List<ItemPlan> ProjectPlans { get; set; }
 
         public string Json { get; set; }
         public string JsonError { get; set; }
     }
 
-    public class PersonPlan
+    public class ItemPlan
     {
-        public PersonPlan(Person person)
+        public ItemPlan(IPlannableItem planableItem)
         {
-            Person = person;
-            this.Channels = new List<PersonChannel>();
+            PlannableItem = planableItem;
+            this.Channels = new List<Channel>();
         }
 
-        public Person Person { get; set; }
-        public List<PersonChannel> Channels { get; set; }
+        public IPlannableItem PlannableItem { get; set; }
+        public List<Channel> Channels { get; set; }
     }
 
-    public class PersonChannel
+    public class Channel
     {
-        public PersonChannel(int channelNumber)
+        public Channel(int channelNumber)
         {
-            this.Projects = new List<PersonProject>();
+            this.PersonProjects = new List<PersonProject>();
             this.ChannelNumber = channelNumber;
         }
 
-        public List<PersonProject> Projects { get; set; }
+        public List<PersonProject> PersonProjects { get; set; }
         public int ChannelNumber { get; set; }
     }
 
-    public class Person
+    public interface IPlannableItem
     {
-        public Person(string name)
+        string Name { get; set; }
+        string Colour { get; set; }
+    }
+
+    public class Person : IPlannableItem
+    {
+        public Person(string name, string colour)
         {
             this.Name = name;
+            this.Colour = colour;
         }
 
         public string Name { get; set; }
-        public string Type { get; set; }
+        public string Colour { get; set; }
+    }
+
+    public class Project : IPlannableItem
+    {
+        public Project(string name, string colour)
+        {
+            this.Name = name;
+            this.Colour = colour;
+        }
+
+        public string Name { get; set; }
+        public string Colour { get; set; }
     }
 
     public class PersonProject
@@ -89,6 +117,10 @@ namespace JGantt.Models
         public DateTime Start { get; set; }
         public DateTime End { get; set; }
 
+        public IPlannableItem GetOther(IPlannableItem item)
+        {
+            return this.Project == item ? (IPlannableItem)this.Person : this.Project;
+        }
         public string CalcWidth()
         {
             return (int)((this.End - this.Start).TotalDays * 50)+ "px";
@@ -99,16 +131,4 @@ namespace JGantt.Models
             return (int)((this.Start - DateTime.Now.Date).TotalDays * 50)+"px";
         }
     }
-
-    public class Project {
-        public Project(string name, string colour)
-        {
-            this.Name = name;
-            this.Colour = colour;
-        }
-
-        public string Name { get; set; }
-        public string Colour { get; set; }
-    }
-
 }
