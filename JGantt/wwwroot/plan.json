@@ -7,6 +7,13 @@
     {Name: "Project 4", Colour: "#BFBFFF"} // Or by HTML RGB.
   ],
 
+  Milestones: [
+    {Project: "Project 1", Date: D+3, Title: "R-1A"},
+    {Project: "Project 1", Date: D+8, Title: "R-1B"},
+    {Project: "Project 3", Date: D+7, Title: "P-2"},
+    {Project: "Project 4", Date: D+7, Title: "P-X"}
+  ],
+
   // Set the plan up here...
   Plan:
   [

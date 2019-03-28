@@ -12,10 +12,40 @@ using JGantt.Models;
 
 namespace JGantt.Controllers
 {
+
     public class JsonModel
     {
-        public List<Project> Projects { get; set; }
+        public List<JsonProject> Projects { get; set; }
         public List<JsonPersonProject> Plan { get; set; }
+        public List<Milestone> Milestones { get; set; }
+    }
+
+    public class Milestone
+    {
+        private const string stringFormat = "yyyyMMdd";
+
+        [JsonProperty("Project")]
+        public string ProjectString { get; set; }
+        [JsonIgnore]
+        public Project Project { get; set; }
+
+        [JsonProperty("Date")]
+        public string DateString { get; set; }
+        public string Title { get; set; }
+
+
+        [JsonIgnore]
+        public DateTime Date
+        {
+            get
+            {
+                return DateTime.ParseExact(this.DateString, stringFormat, CultureInfo.CurrentCulture, DateTimeStyles.None);
+            }
+            //set
+            //{
+            //    this.Start = value.ToString(stringFormat);
+            //}
+        }
     }
 
     public class JsonPersonProject
@@ -134,7 +164,15 @@ namespace JGantt.Controllers
             people.AddRange(jsonModel.Plan.Select(p => p.Person).Distinct().Select(p => new Person(p, "")));
 
             List<Project> projects = new List<Project>();
-            projects.AddRange(jsonModel.Plan.Select(p => p.Project).Distinct().Select(p => jsonModel.Projects.FirstOrDefault(pro => pro.Name == p) ?? new Project(p, "")));
+            projects.AddRange(jsonModel.Plan.Select(p => p.Project).Distinct().Select(p => new Project(p, jsonModel.Projects.FirstOrDefault(pro => pro.Name == p)?.Colour, jsonModel.Milestones.Where(m => m.ProjectString == p))));
+
+            foreach (var project in projects)
+            {
+                foreach (var milestone in project.Milestones)
+                {
+                    milestone.Project = project;
+                }
+            }
 
             var personProjects = new List<PersonProject>();
             foreach (var item in jsonModel.Plan)

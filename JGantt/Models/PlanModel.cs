@@ -1,4 +1,5 @@
-﻿using System;
+﻿using JGantt.Controllers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -90,9 +91,9 @@ namespace JGantt.Models
         public string Colour { get; set; }
     }
 
-    public class Project : IPlannableItem
+    public class JsonProject
     {
-        public Project(string name, string colour)
+        public JsonProject(string name, string colour)
         {
             this.Name = name;
             this.Colour = colour;
@@ -100,6 +101,21 @@ namespace JGantt.Models
 
         public string Name { get; set; }
         public string Colour { get; set; }
+    }
+
+    public class Project : IPlannableItem
+    {
+        public Project(string name, string colour, IEnumerable<Milestone> milestones)
+        {
+            this.Name = name;
+            this.Colour = colour;
+            this.Milestones = milestones.ToList();
+        }
+
+        public string Name { get; set; }
+        public string Colour { get; set; }
+
+        public List<Milestone> Milestones { get; set; }
     }
 
     public class PersonProject

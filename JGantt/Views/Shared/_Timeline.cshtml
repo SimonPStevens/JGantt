@@ -1,12 +1,38 @@
 ﻿@model List<ItemPlan>
 
 <div class="row" style="margin: 10px 5px 10px 5px;">
+    <div class="col-md-11 col-md-offset-1">
+
+        @{int maxCount = 0; }
+        @foreach (var d in Enumerable.Range(0, (int)(Model.SelectMany(m => m.Channels.SelectMany(c => c.PersonProjects)).MaxOrDefault(p => p.End, DateTime.Today.AddDays(14)) - DateTime.Today).TotalDays))
+        {
+            int dayCount = 0;
+
+            <div style="display: block; position:absolute; left: @(d * 50)px; width: 50px;">
+                @foreach (var milestone in Model.SelectMany(m => m.Channels.SelectMany(c => c.PersonProjects).SelectMany(p => p.Project.Milestones)).Distinct().Where(milestone => milestone.Date == DateTime.Today.AddDays(d)))
+                {
+                    dayCount++;
+                    <div style="background: @milestone.Project.Colour; height: 20px; overflow: hidden">
+                        @milestone.Title
+                    </div>
+                }
+            </div>
+
+            maxCount = Math.Max(maxCount, dayCount);
+        }
+
+        <div style="height: @(maxCount*20)px">
+        </div>
+    </div>
+</div>
+
+<div class="row" style="margin: 10px 5px 10px 5px;">
     <div class="col-md-1">
         &nbsp;
     </div>
 
     <div class="col-md-11">
-        @foreach (var d in Enumerable.Range(0, (int)(Model.SelectMany(m=>m.Channels.SelectMany(c=>c.PersonProjects)).Max(p=>p.End) - DateTime.Today).TotalDays))
+        @foreach (var d in Enumerable.Range(0, (int)(Model.SelectMany(m => m.Channels.SelectMany(c => c.PersonProjects)).MaxOrDefault(p => p.End, DateTime.Today.AddDays(14)) - DateTime.Today).TotalDays))
         {
             <div style="display: block; border:1px solid grey; position:absolute; width: 50px; left: @(d*50)px; background: @((DateTime.Now.Date.AddDays(d).DayOfWeek == DayOfWeek.Saturday || DateTime.Now.Date.AddDays(d).DayOfWeek == DayOfWeek.Sunday) ? "darkgrey" : "lightgrey")">
                 @DateTime.Now.Date.AddDays(d).ToString("dd/MM")
