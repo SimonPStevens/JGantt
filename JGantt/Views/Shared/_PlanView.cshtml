@@ -4,17 +4,25 @@
 
 @foreach (var item in Model.Select(p => p.PlannableItem).Distinct())
 {
-    <div class="row" style="margin: 10px 5px 10px 5px; height: @(Model.Where(p => p.PlannableItem == item).SelectMany(p=>p.Channels).Count() * 20)px">
+    @*<div class="row" style="margin: 10px 5px 10px 5px;">
+        <partial name="_Milestones" model="new Tuple<List<ItemPlan>, IPlannableItem>(Model, item)" />
+    </div>*@
+
+    <div class="row" style="margin: 10px 5px 10px 5px; height: @(Model.First(p => p.PlannableItem == item).ViewChannelCount() * 20)px">
         <div class="col-md-1" style="height: 100%; padding: 0px 5px 0px 5px;">
             <div style="background: @item.Colour; height: 100%; text-align:center; overflow:hidden;">
                 @item.Name
             </div>
         </div>
 
-        <div class="col-md-11">
+        <div class="col-md-11" style="padding: 0px;">
 
+            <div>
+                <partial name="_Milestones" model="new Tuple<List<ItemPlan>, IPlannableItem>(Model, item)" />
+            </div>
             @*@(ItemPlan itemPlan = Model.FirstOrDefault(p => p.PlannableItem == item))*@
-            
+
+            <div style="position: relative">
                 @foreach (var channel in Model.FirstOrDefault(p => p.PlannableItem == item).Channels)
                 {
                     @foreach (var personProject in channel.PersonProjects)
@@ -24,7 +32,8 @@
                         </div>
                     }
                 }
-            
+            </div>
+
         </div>
     </div>
-}
+    }

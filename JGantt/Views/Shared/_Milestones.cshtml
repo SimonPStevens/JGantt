@@ -1,0 +1,22 @@
+﻿@model Tuple<List<ItemPlan>, IPlannableItem>
+
+    @{int maxCount = 0; }
+    @foreach (var d in Enumerable.Range(0, (int)(Model.Item1.SelectMany(m => m.Channels.SelectMany(c => c.PersonProjects)).MaxOrDefault(p => p.End, DateTime.Today.AddDays(14)) - DateTime.Today).TotalDays))
+    {
+        int dayCount = 0;
+
+    <div style="display: block; position:absolute; left: @(d * 50)px; width: 50px;">
+        @foreach (var milestone in Model.Item1.SelectMany(m => m.Channels.SelectMany(c => c.PersonProjects).SelectMany(p => p.Project.Milestones)).Distinct().Where(milestone => (milestone.Project.Name == Model.Item2?.Name || Model.Item2 == null) && milestone.Date == DateTime.Today.AddDays(d)))
+            {
+                dayCount++;
+        <div style="background: @milestone.Project.Colour; height: 20px; overflow: hidden">
+            @milestone.Title
+        </div>
+            }
+    </div>
+
+        maxCount = Math.Max(maxCount, dayCount);
+    }
+
+    <div style="height: @(maxCount*20)px">
+    </div>

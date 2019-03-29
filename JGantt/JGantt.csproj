@@ -11,6 +11,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Update="Views\Shared\_Milestones.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
     <Content Update="Views\Shared\_Timeline.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>

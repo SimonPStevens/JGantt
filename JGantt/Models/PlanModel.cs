@@ -59,6 +59,19 @@ namespace JGantt.Models
 
         public IPlannableItem PlannableItem { get; set; }
         public List<Channel> Channels { get; set; }
+
+        public int ViewChannelCount()
+        {
+            switch (this.PlannableItem)
+            {
+                case Project proj:
+                    return this.Channels.Count + proj.Milestones.GroupBy(m=>m.Date).MaxOrDefault(g=>g.Count(), 0);
+
+                case Person p:
+                default:
+                    return this.Channels.Count;
+            }
+        }
     }
 
     public class Channel
