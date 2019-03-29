@@ -158,30 +158,40 @@ namespace JGantt.Controllers
                 return errorModel;
             }
 
-            modelTransform?.Invoke(jsonModel);
-
-            List<Person> people = new List<Person>();
-            people.AddRange(jsonModel.Plan.Select(p => p.Person).Distinct().Select(p => new Person(p, "")));
-
-            List<Project> projects = new List<Project>();
-            projects.AddRange(jsonModel.Plan.Select(p => p.Project).Distinct().Select(p => new Project(p, jsonModel.Projects.FirstOrDefault(pro => pro.Name == p)?.Colour, jsonModel.Milestones.Where(m => m.ProjectString == p))));
-
-            foreach (var project in projects)
+            PlanModel model;
+            try
             {
-                foreach (var milestone in project.Milestones)
+                modelTransform?.Invoke(jsonModel);
+
+                List<Person> people = new List<Person>();
+                people.AddRange(jsonModel.Plan.Select(p => p.Person).Distinct().Select(p => new Person(p, "")));
+
+                List<Project> projects = new List<Project>();
+                projects.AddRange(jsonModel.Plan.Select(p => p.Project).Distinct().Select(p => new Project(p, jsonModel.Projects.FirstOrDefault(pro => pro.Name == p)?.Colour, jsonModel.Milestones.Where(m => m.ProjectString == p))));
+
+                foreach (var project in projects)
                 {
-                    milestone.Project = project;
+                    foreach (var milestone in project.Milestones)
+                    {
+                        milestone.Project = project;
+                    }
                 }
-            }
 
-            var personProjects = new List<PersonProject>();
-            foreach (var item in jsonModel.Plan)
+                var personProjects = new List<PersonProject>();
+                foreach (var item in jsonModel.Plan)
+                {
+                    personProjects.Add(new PersonProject(people.First(p => p.Name == item.Person), projects.First(p => p.Name == item.Project), item.StartDate, item.EndDate));
+                }
+
+                model = new PlanModel(personProjects);
+                model.Json = json;
+            }
+            catch (Exception ex)
             {
-                personProjects.Add(new PersonProject(people.First(p => p.Name == item.Person), projects.First(p => p.Name == item.Project), item.StartDate, item.EndDate));
+                model = new PlanModel(null);
+                model.Json = json;
+                model.JsonError = $"Error building view model {ex.ToString()}";
             }
-
-            var model = new PlanModel(personProjects);
-            model.Json = json;
 
             return model;
         }
