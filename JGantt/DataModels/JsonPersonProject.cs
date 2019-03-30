@@ -38,7 +38,7 @@ namespace JGantt.DataModels
                 }
                 else if (this.DaysDuration.HasValue)
                 {
-                    return this.StartDate.AddDays(this.DaysDuration.Value);
+                    return this.StartDate.AddworkingDays(this.DaysDuration.Value);
                 } else
                 {
                     return this.StartDate;

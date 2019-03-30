@@ -27,7 +27,7 @@
                 {
                     @foreach (var personProject in channel.PersonProjects)
                     {
-                        <div style="overflow: hidden; display: block; position:absolute; height:20px; width: @(personProject.CalcWidth()); left: @(personProject.CalcLeftOffset()); top: @(channel.ChannelNumber * 20)px; background: @(personProject.GetOther(item).Colour)">
+                        <div style="overflow: hidden; border: 1px solid lightgrey; display: block; position:absolute; height:20px; width: @(personProject.CalcWidth()); left: @(personProject.CalcLeftOffset()); top: @(channel.ChannelNumber * 20)px; background: @(personProject.GetOther(item).Colour)">
                             @personProject.GetOther(item).Name
                         </div>
                     }

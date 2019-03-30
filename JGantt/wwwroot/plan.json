@@ -37,7 +37,8 @@
 
     // Projects can overlap start/end dates and the view will adapt the layout to fit in the smallest possible number of rows.
     {Person: "Marshal", Project: "Project 3", Start: D+0, DaysDuration: 8},
-    {Person: "Marshal", Project: "Project 4", Start: D+6, DaysDuration: 6},
+    {Person: "Marshal", Project: "Project 4", Start: D+6, DaysDuration: 4},
+    {Person: "Marshal", Project: "Project 4", Start: D+9, DaysDuration: 3},
 
     {Person: "Sky", Project: "Project 1", Start: D+0, DaysDuration: 2},
     {Person: "Sky", Project: "Project 4", Start: D+2, DaysDuration: 3},
