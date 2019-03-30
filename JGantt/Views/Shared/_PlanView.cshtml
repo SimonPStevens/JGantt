@@ -15,14 +15,14 @@
             </div>
         </div>
 
-        <div class="col-md-11" style="padding: 0px;">
+        <div class="col-md-11" style="padding: 0px; height: 100%">
 
             <div>
                 <partial name="_Milestones" model="new Tuple<List<ItemPlan>, IPlannableItem>(Model, item)" />
             </div>
             @*@(ItemPlan itemPlan = Model.FirstOrDefault(p => p.PlannableItem == item))*@
 
-            <div style="position: relative">
+            <div style="position: relative; z-index: -1">
                 @foreach (var channel in Model.FirstOrDefault(p => p.PlannableItem == item).Channels)
                 {
                     @foreach (var personProject in channel.PersonProjects)
@@ -33,6 +33,17 @@
                     }
                 }
             </div>
+
+            @foreach (var d in Enumerable.Range(0, (int)(Model.SelectMany(m => m.Channels.SelectMany(c => c.PersonProjects)).MaxOrDefault(p => p.End, DateTime.Today.AddDays(14)) - DateTime.Today).TotalDays))
+            {
+                if (DateTime.Now.Date.AddDays(d).IsWeekend())
+                {
+                    <div style="opacity: 0.5; display: block; position:absolute; height: 100%; width: 50px; left: @(d * 50)px; top: 0px; background: @((DateTime.Now.Date.AddDays(d).IsWeekend()) ? "darkgrey" : "lightgrey")">
+                    </div>
+                    <div style="opacity: 0.5; display: block; position:absolute; height: 10px; width: 50px; left: @(d * 50)px; top: -10px; background: @((DateTime.Now.Date.AddDays(d).IsWeekend()) ? "darkgrey" : "lightgrey")">
+                    </div>
+                }
+            }
 
         </div>
     </div>

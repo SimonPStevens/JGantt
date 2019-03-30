@@ -17,7 +17,7 @@
     <div class="col-md-11">
         @foreach (var d in Enumerable.Range(0, (int)(Model.SelectMany(m => m.Channels.SelectMany(c => c.PersonProjects)).MaxOrDefault(p => p.End, DateTime.Today.AddDays(14)) - DateTime.Today).TotalDays))
         {
-            <div style="display: block; border:1px solid grey; position:absolute; width: 50px; left: @(d*50)px; background: @((DateTime.Now.Date.AddDays(d).DayOfWeek == DayOfWeek.Saturday || DateTime.Now.Date.AddDays(d).DayOfWeek == DayOfWeek.Sunday) ? "darkgrey" : "lightgrey")">
+            <div style="display: block; border:1px solid grey; position:absolute; width: 50px; left: @(d*50)px; background: @((DateTime.Now.Date.AddDays(d).IsWeekend()) ? "darkgrey" : "lightgrey")">
                 @DateTime.Now.Date.AddDays(d).ToString("dd/MM")
             </div>
         }
