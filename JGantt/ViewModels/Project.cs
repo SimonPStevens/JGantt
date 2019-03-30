@@ -4,13 +4,13 @@ using System.Linq;
 
 namespace JGantt.ViewModels
 {
-    public class Project : IPlannableItem
+    public class Project : IPlannableItem, IKeyItem
     {
         public Project(string name, string colour, IEnumerable<Milestone> milestones)
         {
             this.Name = name;
             this.Colour = colour;
-            this.Milestones = milestones.ToList();
+            this.Milestones = milestones?.ToList() ?? new List<Milestone>();
             foreach (var milestone in this.Milestones)
             {
                 milestone.Project = this;

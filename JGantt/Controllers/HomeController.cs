@@ -64,14 +64,21 @@ namespace JGantt.Controllers
             {
                 modelTransform?.Invoke(jsonModel);
 
-                List<Person> people = new List<Person>();
-                people.AddRange(jsonModel.Plan.Select(p => p.Person).Distinct().Select(p => new Person(p, "")));
+                List<Category> categoires = jsonModel.Categories?.Distinct().Select(c => new Category(c.Name, c.Colour)).ToList();
+
+                List<Person> definedPeople = jsonModel.People?.Distinct().Select(p => new Person(p.Name, "", categoires?.FirstOrDefault(c => c.Name == p.Type))).ToList();
+
+                List<Person> people = jsonModel.Plan?.Select(p => p.Person).Distinct().Select(personName =>
+                {
+                    var person = definedPeople?.FirstOrDefault(p => p.Name == personName);
+                    return person ?? new Person(personName, "", null);
+                }).ToList();
 
                 List<Project> projects = new List<Project>();
                 projects.AddRange(jsonModel.Plan.Select(p => p.Project).Distinct().Select(p =>
                 {
-                    var mileStones = jsonModel.Milestones.Where(m => m.Project == p).Select(m => new Milestone(m.Title, m.Date));
-                    var project = new Project(p, jsonModel.Projects.FirstOrDefault(pro => pro.Name == p)?.Colour, mileStones);
+                    var mileStones = jsonModel.Milestones?.Where(m => m.Project == p).Select(m => new Milestone(m.Title, m.Date));
+                    var project = new Project(p, jsonModel.Projects?.FirstOrDefault(pro => pro.Name == p)?.Colour, mileStones);
                     return project;
                 }));
 

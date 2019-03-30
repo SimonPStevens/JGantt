@@ -14,6 +14,18 @@
     {Project: "Project 4", Date: D+7, Title: "P-X"}
   ],
 
+  People: [
+    {Name: "Chase", Type: "Dev" },
+    {Name: "Marshal", Type: "Dev" },
+    {Name: "Sky", Type: "QA" },
+    {Name: "Rubble", Type: "QA" }
+  ],
+
+  Categories: [
+    {Name: "Dev", Colour: "Red" },
+    {Name: "QA", Colour: "Yellow" }
+  ],
+
   // Set the plan up here...
   Plan:
   [

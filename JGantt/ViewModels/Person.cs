@@ -2,13 +2,24 @@
 {
     public class Person : IPlannableItem
     {
-        public Person(string name, string colour)
+        private string _colour;
+
+        public Person(string name, string colour, Category cateory)
         {
             this.Name = name;
-            this.Colour = colour;
+            this.Category = cateory;
+
+            _colour = colour;
         }
 
         public string Name { get; set; }
-        public string Colour { get; set; }
+        public string Colour
+        {
+            get
+            {
+                return this.Category?.Colour ?? _colour;
+            }
+        }
+        public Category Category { get; set; }
     }
 }

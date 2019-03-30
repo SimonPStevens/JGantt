@@ -10,6 +10,10 @@ namespace JGantt.ViewModels
         public PlanModel(List<PersonProject> plan)
         {
             this.Plan = plan ?? new List<PersonProject>();
+
+            this.Projects = plan.Select(p => p.Project).Distinct().ToList();
+            this.Categories = plan.Where(p=> p.Person.Category != null).Select(p => p.Person.Category).Distinct().ToList();
+
             this.PersonPlans = BuildItemPlan(item=>item.Person);
             this.ProjectPlans = BuildItemPlan(item => item.Project);
         }
@@ -43,6 +47,9 @@ namespace JGantt.ViewModels
         public List<PersonProject> Plan { get; set; }
         public List<ItemPlan> PersonPlans { get; set; }
         public List<ItemPlan> ProjectPlans { get; set; }
+
+        public List<Category> Categories { get; set; }
+        public List<Project> Projects { get; set; }
 
         public string Json { get; set; }
         public string JsonError { get; set; }

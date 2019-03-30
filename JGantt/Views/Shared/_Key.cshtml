@@ -1,0 +1,15 @@
+﻿@model IEnumerable<IKeyItem>
+
+@if(Model.Any())
+{
+    <div>
+        @foreach (var item in Model)
+        {
+        <div style="display: inline-table; text-align: center; margin: 10px; padding: 10px; min-width: 100px; overflow: hidden; height: 50px; background:@item.Colour">
+            <div style="display: table-cell; vertical-align: middle">
+                <h4>@item.Name</h4>
+            </div>
+        </div>
+        }
+    </div>
+}
