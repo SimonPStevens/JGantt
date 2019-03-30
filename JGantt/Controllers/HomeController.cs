@@ -1,107 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using JGantt.DataModels;
+using JGantt.ViewModels;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using JGantt.Models;
 
 namespace JGantt.Controllers
 {
-
-    public class JsonModel
-    {
-        public List<JsonProject> Projects { get; set; }
-        public List<JsonPersonProject> Plan { get; set; }
-        public List<Milestone> Milestones { get; set; }
-    }
-
-    public class Milestone
-    {
-        private const string stringFormat = "yyyyMMdd";
-
-        [JsonProperty("Project")]
-        public string ProjectString { get; set; }
-        [JsonIgnore]
-        public Project Project { get; set; }
-
-        [JsonProperty("Date")]
-        public string DateString { get; set; }
-        public string Title { get; set; }
-
-
-        [JsonIgnore]
-        public DateTime Date
-        {
-            get
-            {
-                return DateTime.ParseExact(this.DateString, stringFormat, CultureInfo.CurrentCulture, DateTimeStyles.None);
-            }
-            //set
-            //{
-            //    this.Start = value.ToString(stringFormat);
-            //}
-        }
-    }
-
-    public class JsonPersonProject
-    {
-        private const string stringFormat = "yyyyMMdd";
-
-        public string Person { get; set; }
-        public string Project { get; set; }
-        public string Start { get; set; }
-
-        [JsonIgnore]
-        public DateTime StartDate
-        {
-            get
-            {
-                return DateTime.ParseExact(this.Start, stringFormat, CultureInfo.CurrentCulture, DateTimeStyles.None);
-            }
-            //set
-            //{
-            //    this.Start = value.ToString(stringFormat);
-            //}
-        }
-
-        public string End { get; set; }
-
-        [JsonIgnore]
-        public DateTime EndDate
-        {
-            get
-            {
-                if (DateTime.TryParseExact(this.End, "yyyyMMdd", CultureInfo.CurrentCulture, DateTimeStyles.None, out DateTime result))
-                {
-                    return result;
-                }
-                else if (this.DaysDuration.HasValue)
-                {
-                    return this.StartDate.AddDays(this.DaysDuration.Value);
-                } else
-                {
-                    return this.StartDate;
-                }
-            }
-            //set
-            //{
-            //    this.End = value.ToString(stringFormat);
-            //}
-        }
-
-        public int? DaysDuration { get; set; }
-    }
-
-    public class SubmitModel
-    {
-        public string Json { get; set; }
-    }
-
     public class HomeController : Controller
     {
         private IHostingEnvironment _env;
@@ -121,7 +31,6 @@ namespace JGantt.Controllers
 
         public IActionResult Index()
         {
-            //DateTime baselineDate = new DateTime(2019, 03, 26);
             var json = System.IO.File.ReadAllText(_env.WebRootPath + @"\plan.json");
 
             foreach (var d in Enumerable.Range(0, 21))
@@ -130,14 +39,6 @@ namespace JGantt.Controllers
             }
 
             PlanModel model = BuildModelFromJson(json);
-            //, (jsonModel) => {
-            //    foreach (var item in jsonModel.Plan)
-            //    {
-            //        item.StartDate = new DateTime(2019, 01, 01) + (item.StartDate - baselineDate);
-            //        item.EndDate = new DateTime(2019, 01, 01) + (item.EndDate - baselineDate);
-            //    }
-            //});
-
 
             return View(model);
         }
@@ -167,7 +68,12 @@ namespace JGantt.Controllers
                 people.AddRange(jsonModel.Plan.Select(p => p.Person).Distinct().Select(p => new Person(p, "")));
 
                 List<Project> projects = new List<Project>();
-                projects.AddRange(jsonModel.Plan.Select(p => p.Project).Distinct().Select(p => new Project(p, jsonModel.Projects.FirstOrDefault(pro => pro.Name == p)?.Colour, jsonModel.Milestones.Where(m => m.ProjectString == p))));
+                projects.AddRange(jsonModel.Plan.Select(p => p.Project).Distinct().Select(p =>
+                {
+                    var mileStones = jsonModel.Milestones.Where(m => m.Project == p).Select(m => new Milestone(m.Title, m.Date));
+                    var project = new Project(p, jsonModel.Projects.FirstOrDefault(pro => pro.Name == p)?.Colour, mileStones);
+                    return project;
+                }));
 
                 foreach (var project in projects)
                 {

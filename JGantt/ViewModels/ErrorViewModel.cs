@@ -1,6 +1,6 @@
 using System;
 
-namespace JGantt.Models
+namespace JGantt.ViewModels
 {
     public class ErrorViewModel
     {
