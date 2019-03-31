@@ -78,12 +78,16 @@ namespace JGantt.Controllers
                 }).ToList();
 
                 List<Project> projects = new List<Project>();
-                projects.AddRange(jsonModel.Plan.Select(p => p.Project).Distinct().Select(p =>
+                var plansToAdd = jsonModel.Plan?.Select(p => p.Project).Distinct().Select(p =>
                 {
                     var mileStones = jsonModel.Milestones?.Where(m => m.Project == p).Select(m => new Milestone(m.Title, m.Date));
                     var project = new Project(p, jsonModel.Projects?.FirstOrDefault(pro => pro.Name == p)?.Colour, mileStones);
                     return project;
-                }));
+                });
+
+                if (plansToAdd?.Any() ?? false) {
+                    projects.AddRange(plansToAdd);
+                }
 
                 foreach (var project in projects)
                 {
@@ -94,10 +98,13 @@ namespace JGantt.Controllers
                 }
 
                 var personProjects = new List<PersonProject>();
-                foreach (var item in jsonModel.Plan)
+                if (jsonModel.Plan != null)
                 {
-                    var endDate = item.EndDate(holidayDates);
-                    personProjects.Add(new PersonProject(people.First(p => p.Name == item.Person), projects.First(p => p.Name == item.Project), item.StartDate, endDate));
+                    foreach (var item in jsonModel.Plan)
+                    {
+                        var endDate = item.EndDate(holidayDates);
+                        personProjects.Add(new PersonProject(people.First(p => p.Name == item.Person), projects.First(p => p.Name == item.Project), item.StartDate, endDate));
+                    }
                 }
 
                 model = new PlanModel(personProjects, holidays);

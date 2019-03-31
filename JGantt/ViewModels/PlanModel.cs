@@ -11,8 +11,8 @@ namespace JGantt.ViewModels
         {
             this.Plan = plan ?? new List<PersonProject>();
 
-            this.Projects = plan.Select(p => p.Project).Distinct().ToList();
-            this.Categories = plan.Where(p=> p.Person.Category != null).Select(p => p.Person.Category).Distinct().ToList();
+            this.Projects = this.Plan.Select(p => p.Project).Distinct().ToList();
+            this.Categories = this.Plan.Where(p=> p.Person.Category != null).Select(p => p.Person.Category).Distinct().ToList();
             this.Holidays = holidays;
 
             this.PersonPlans = BuildItemPlan(item=>item.Person);
