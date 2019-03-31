@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using Newtonsoft.Json;
 
@@ -27,27 +28,20 @@ namespace JGantt.DataModels
 
         public string End { get; set; }
 
-        [JsonIgnore]
-        public DateTime EndDate
+        public DateTime EndDate(List<DateTime> holidayDates)
         {
-            get
+            if (DateTime.TryParseExact(this.End, "yyyyMMdd", CultureInfo.CurrentCulture, DateTimeStyles.None, out DateTime result))
             {
-                if (DateTime.TryParseExact(this.End, "yyyyMMdd", CultureInfo.CurrentCulture, DateTimeStyles.None, out DateTime result))
-                {
-                    return result;
-                }
-                else if (this.DaysDuration.HasValue)
-                {
-                    return this.StartDate.AddworkingDays(this.DaysDuration.Value);
-                } else
-                {
-                    return this.StartDate;
-                }
+                return result;
             }
-            //set
-            //{
-            //    this.End = value.ToString(stringFormat);
-            //}
+            else if (this.DaysDuration.HasValue)
+            {
+                return this.StartDate.AddworkingDays(this.DaysDuration.Value, holidayDates);
+            }
+            else
+            {
+                return this.StartDate;
+            }
         }
 
         public int? DaysDuration { get; set; }

@@ -9,5 +9,7 @@ namespace JGantt.DataModels
         public List<JsonMilestone> Milestones { get; set; }
         public List<JsonPerson> People { get; set; }
         public List<JsonCategory> Categories { get; set; }
+
+        public List<JsonHoliday> Holidays { get; set; }
     }
 }

@@ -28,6 +28,10 @@
     {Name: "QA", Colour: "Yellow" }
   ],
 
+  "Holidays":  [
+    {Date: D+1, Colour: "lightpink" }, // You can set a colour for each holiday or leave it off to get the default weekend colour.
+  ],
+
   // Set the plan up here...
   Plan:
   [
@@ -37,14 +41,14 @@
 
     // Projects can overlap start/end dates and the view will adapt the layout to fit in the smallest possible number of rows.
     {Person: "Marshal", Project: "Project 3", Start: D+0, DaysDuration: 8},
-    {Person: "Marshal", Project: "Project 4", Start: D+6, DaysDuration: 4},
+    {Person: "Marshal", Project: "Project 4", Start: D+5, DaysDuration: 5},
     {Person: "Marshal", Project: "Project 4", Start: D+9, DaysDuration: 3},
 
     {Person: "Sky", Project: "Project 1", Start: D+0, DaysDuration: 2},
     {Person: "Sky", Project: "Project 4", Start: D+2, DaysDuration: 3},
-    {Person: "Sky", Project: "Project 5", Start: D+6, DaysDuration: 3}, // Projects that are not in the master project list still work, just without a colour.
+    {Person: "Sky", Project: "Project 5", Start: D+5, DaysDuration: 3}, // Projects that are not in the master project list still work, just without a colour.
     {Person: "Sky", Project: "Project 3", Start: D+4, DaysDuration: 4},
-    {Person: "Sky", Project: "Project 1", Start: D+6, DaysDuration: 1},
+    {Person: "Sky", Project: "Project 1", Start: D+5, DaysDuration: 1},
 
     // If you prefer to structure your file with projects first, or a combination of both, that works too.
     {Project: "Project 2", Person: "Rubble", Start: D+0, DaysDuration: 7},

@@ -1,10 +1,10 @@
-﻿@model List<ItemPlan>
+﻿@model Tuple<PlanModel, List<ItemPlan>>
 
-@if (Model.FirstOrDefault()?.PlannableItem is Person)
+@if (Model.Item2.FirstOrDefault()?.PlannableItem is Person)
 {
 <div class="row" style="margin: 10px 5px 10px 5px;">
     <div class="col-md-11 col-md-offset-1">
-        <partial name="_Milestones" model="new Tuple<List<ItemPlan>, IPlannableItem>(Model, null)" />
+        <partial name="_Milestones" model="new Tuple<List<ItemPlan>, IPlannableItem>(Model.Item2, null)" />
     </div>
 </div>
 }
@@ -15,10 +15,11 @@
     </div>
 
     <div class="col-md-11">
-        @foreach (var d in Enumerable.Range(0, (int)(Model.SelectMany(m => m.Channels.SelectMany(c => c.PersonProjects)).MaxOrDefault(p => p.End, DateTime.Today.AddDays(14)) - DateTime.Today).TotalDays))
+        @foreach (var d in Enumerable.Range(0, (int)(Model.Item2.SelectMany(m => m.Channels.SelectMany(c => c.PersonProjects)).MaxOrDefault(p => p.End, DateTime.Today.AddDays(14)) - DateTime.Today).TotalDays))
         {
-            <div style="display: block; border:1px solid grey; position:absolute; width: 50px; left: @(d*50)px; background: @((DateTime.Now.Date.AddDays(d).IsWeekend()) ? "darkgrey" : "lightgrey")">
-                @DateTime.Now.Date.AddDays(d).ToString("dd/MM")
+            var date = DateTime.Now.Date.AddDays(d);
+            <div style="display: block; border:1px solid grey; position:absolute; width: 50px; left: @(d*50)px; background: @Model.Item1.GetDayColour(date)">
+                @date.ToString("dd/MM")
             </div>
         }
     </div>

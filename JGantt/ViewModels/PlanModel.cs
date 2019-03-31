@@ -7,12 +7,13 @@ namespace JGantt.ViewModels
 {
     public class PlanModel
     {
-        public PlanModel(List<PersonProject> plan)
+        public PlanModel(List<PersonProject> plan, List<Holiday> holidays)
         {
             this.Plan = plan ?? new List<PersonProject>();
 
             this.Projects = plan.Select(p => p.Project).Distinct().ToList();
             this.Categories = plan.Where(p=> p.Person.Category != null).Select(p => p.Person.Category).Distinct().ToList();
+            this.Holidays = holidays;
 
             this.PersonPlans = BuildItemPlan(item=>item.Person);
             this.ProjectPlans = BuildItemPlan(item => item.Project);
@@ -44,12 +45,35 @@ namespace JGantt.ViewModels
             return plan;
         }
 
+        public bool IsHoliday(DateTime date)
+        {
+            return this.Holidays?.Any(h => h.Date == date.Date) ?? false;
+        }
+
+        public string GetDayColour(DateTime date)
+        {
+            var holiday = this.Holidays?.FirstOrDefault(h => h.Date == date.Date);
+            if (holiday != null)
+            {
+                return !string.IsNullOrWhiteSpace(holiday.Colour) ? holiday.Colour : "darkgrey";
+            }
+            else if (date.IsWeekend())
+            {
+                return "darkgrey";
+            }
+            else
+            {
+                return "lightgrey";
+            }
+        }
+
         public List<PersonProject> Plan { get; set; }
         public List<ItemPlan> PersonPlans { get; set; }
         public List<ItemPlan> ProjectPlans { get; set; }
 
         public List<Category> Categories { get; set; }
         public List<Project> Projects { get; set; }
+        public List<Holiday> Holidays { get; set; }
 
         public string Json { get; set; }
         public string JsonError { get; set; }

@@ -33,7 +33,7 @@ namespace JGantt.Controllers
         {
             var json = System.IO.File.ReadAllText(_env.WebRootPath + @"\plan.json");
 
-            foreach (var d in Enumerable.Range(0, 21))
+            foreach (var d in Enumerable.Range(0, 21).Reverse())
             {
                 json = json.Replace($"D+{d}", DateTime.Today.AddDays(d).ToString("yyyyMMdd"));
             }
@@ -52,7 +52,7 @@ namespace JGantt.Controllers
             }
             catch (Exception ex)
             {
-                var errorModel = new PlanModel(null);
+                var errorModel = new PlanModel(null, null);
                 errorModel.Json = json;
                 errorModel.JsonError = $"Error processing JSON {ex.ToString()}";
 
@@ -65,6 +65,9 @@ namespace JGantt.Controllers
                 modelTransform?.Invoke(jsonModel);
 
                 List<Category> categoires = jsonModel.Categories?.Distinct().Select(c => new Category(c.Name, c.Colour)).ToList();
+
+                List<Holiday> holidays = jsonModel.Holidays?.Distinct().Select(h => new Holiday(h.Date, h.Colour)).ToList();
+                List<DateTime> holidayDates = holidays?.Select(h => h.Date).Distinct().ToList();
 
                 List<Person> definedPeople = jsonModel.People?.Distinct().Select(p => new Person(p.Name, "", categoires?.FirstOrDefault(c => c.Name == p.Type))).ToList();
 
@@ -93,15 +96,16 @@ namespace JGantt.Controllers
                 var personProjects = new List<PersonProject>();
                 foreach (var item in jsonModel.Plan)
                 {
-                    personProjects.Add(new PersonProject(people.First(p => p.Name == item.Person), projects.First(p => p.Name == item.Project), item.StartDate, item.EndDate));
+                    var endDate = item.EndDate(holidayDates);
+                    personProjects.Add(new PersonProject(people.First(p => p.Name == item.Person), projects.First(p => p.Name == item.Project), item.StartDate, endDate));
                 }
 
-                model = new PlanModel(personProjects);
+                model = new PlanModel(personProjects, holidays);
                 model.Json = json;
             }
             catch (Exception ex)
             {
-                model = new PlanModel(null);
+                model = new PlanModel(null, null);
                 model.Json = json;
                 model.JsonError = $"Error building view model {ex.ToString()}";
             }

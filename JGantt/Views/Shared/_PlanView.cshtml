@@ -1,14 +1,14 @@
-﻿@model List<ItemPlan>
+﻿@model Tuple<PlanModel, List<ItemPlan>>
 
 <partial name="_Timeline" />
 
-@foreach (var item in Model.Select(p => p.PlannableItem).Distinct())
+@foreach (var item in Model.Item2.Select(p => p.PlannableItem).Distinct())
 {
     @*<div class="row" style="margin: 10px 5px 10px 5px;">
         <partial name="_Milestones" model="new Tuple<List<ItemPlan>, IPlannableItem>(Model, item)" />
     </div>*@
 
-    <div class="row" style="margin: 10px 5px 10px 5px; height: @(Model.First(p => p.PlannableItem == item).ViewChannelCount() * 20)px">
+    <div class="row" style="margin: 10px 5px 10px 5px; height: @(Model.Item2.First(p => p.PlannableItem == item).ViewChannelCount() * 20)px">
         <div class="col-md-1" style="height: 100%; padding: 0px 5px 0px 5px;">
             <div style="background: @item.Colour; height: 100%; text-align:center; overflow:hidden;">
                 @item.Name
@@ -18,12 +18,12 @@
         <div class="col-md-11" style="padding: 0px; height: 100%">
 
             <div>
-                <partial name="_Milestones" model="new Tuple<List<ItemPlan>, IPlannableItem>(Model, item)" />
+                <partial name="_Milestones" model="new Tuple<List<ItemPlan>, IPlannableItem>(Model.Item2, item)" />
             </div>
             @*@(ItemPlan itemPlan = Model.FirstOrDefault(p => p.PlannableItem == item))*@
 
             <div style="position: relative; z-index: -1">
-                @foreach (var channel in Model.FirstOrDefault(p => p.PlannableItem == item).Channels)
+                @foreach (var channel in Model.Item2.FirstOrDefault(p => p.PlannableItem == item).Channels)
                 {
                     @foreach (var personProject in channel.PersonProjects)
                     {
@@ -34,13 +34,15 @@
                 }
             </div>
 
-            @foreach (var d in Enumerable.Range(0, (int)(Model.SelectMany(m => m.Channels.SelectMany(c => c.PersonProjects)).MaxOrDefault(p => p.End, DateTime.Today.AddDays(14)) - DateTime.Today).TotalDays))
+            @foreach (var d in Enumerable.Range(0, (int)(Model.Item2.SelectMany(m => m.Channels.SelectMany(c => c.PersonProjects)).MaxOrDefault(p => p.End, DateTime.Today.AddDays(14)) - DateTime.Today).TotalDays))
             {
-                if (DateTime.Now.Date.AddDays(d).IsWeekend())
+                var date = DateTime.Now.Date.AddDays(d);
+
+                if (date.IsWeekend() || Model.Item1.IsHoliday(date))
                 {
-                    <div style="opacity: 0.5; display: block; position:absolute; height: 100%; width: 50px; left: @(d * 50)px; top: 0px; background: @((DateTime.Now.Date.AddDays(d).IsWeekend()) ? "darkgrey" : "lightgrey")">
+                    <div style="opacity: 0.5; display: block; position:absolute; height: 100%; width: 50px; left: @(d * 50)px; top: 0px; background: @Model.Item1.GetDayColour(date)">
                     </div>
-                    <div style="opacity: 0.5; display: block; position:absolute; height: 10px; width: 50px; left: @(d * 50)px; top: -10px; background: @((DateTime.Now.Date.AddDays(d).IsWeekend()) ? "darkgrey" : "lightgrey")">
+                    <div style="opacity: 0.5; display: block; position:absolute; height: 10px; width: 50px; left: @(d * 50)px; top: -10px; background: @Model.Item1.GetDayColour(date)">
                     </div>
                 }
             }
